@@ -16,8 +16,8 @@ def states_dx(t, x, u, params):
     La, ra, k1, Vmax, k5 = map(params.get, ['La', 'ra', 'k1', 'Vmax', 'k5'])
     J, b, k2, k3 = map(params.get, ['J', 'b', 'k2', 'k3'])
     
-    h = float(np.clip(x[2], 0.0, 4.0))      # limitação do valor da medida da altura do tanque, que deve ficar entre 0.0 e 4.0
-    theta = float(np.clip(x[2], 0.0, 2*np.pi))  # limitação do Ângulo de posição da válvula, entre 0 e 2pi.
+    h = float(np.clip(x[2], 0.0, 4.0))      # Limitação da medida da altura do tanque, que deve ficar entre 0,0 e 4,0
+    theta = float(np.clip(x[2], 0.0, 2*np.pi))  # Limitação do ângulo de posição da válvula, entre 0 e 2pi
     r_h = float(R0 + (R1 - R0) * h / H)
     va = Vmax * (1 - 2 / (1 + np.exp(k5 * (u - 12))))
     c_v = float(-a * np.pi / (np.sqrt(roh * g)))
@@ -96,13 +96,13 @@ t_lin, y_lin = ct.forced_response(sys_lin, t, delta_u, X0=x_02)
 y_lin += output_y(0, xeq, ueq, pmt)  # adiciona ponto de equilíbrio à saída
     
 
-plt.plot(t, y, 'b', label='resposta não linear') 
-plt.plot(t, uf, 'k--', label='referência') 
-plt.plot(t, y_lin, 'r', label='resposta linear') 
+plt.plot(t, y, 'b', label='Resposta não linear') 
+plt.plot(t, uf, 'k--', label='Referência') 
+plt.plot(t, y_lin, 'r', label='Resposta linear') 
 plt.ylim(0.0, 20.0)
 plt.legend() 
-plt.xlabel('t') 
-plt.ylabel('y(t)') 
+plt.xlabel('Tempo (s)') 
+plt.ylabel('Saída y(t)') 
 plt.grid() 
 plt.show() 
 

@@ -3,8 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import control as ct
 
-with open("Dados_degrau_FanPlate.txt"
-, "r") as f:
+with open("Dados_degrau_FanPlate.txt", "r") as f:
     data = f.read()
 
 with open("Dados_degrau_FanPlate_2.txt", "r") as f2:
@@ -57,9 +56,9 @@ plt.legend()
 plt.grid()
 plt.show()
 
-plt.plot(t_norm[:20000-t_ign], angle_norm[:20000-t_ign], 'b', label='dados do degrau')
-plt.plot(t_norm[:20000 - t_ign], 0.00117*t_norm[:20000 - t_ign] -0.64484, 'r')
-plt.plot(t_norm[:20000-t_ign], maxm[:20000 - t_ign], 'g')
+plt.plot(t_norm[:20000-t_ign], angle_norm[:20000-t_ign], 'b', label='curva referente ao degrau 1')
+plt.plot(t_norm[:20000 - t_ign], 0.00117*t_norm[:20000 - t_ign] -0.64484, 'r', label='reta que passa pelo ponto de inflexão')
+plt.plot(t_norm[:20000-t_ign], maxm[:20000 - t_ign], 'g', label='limites - valores inicial e em regime permanente')
 plt.plot(t_norm[:20000 - t_ign], minm[:20000 - t_ign], 'g')
 plt.xlabel("t")
 plt.ylabel("y(t)")
@@ -81,10 +80,10 @@ u_ss = np.mean(duty_cycles[18000:25000])
 k = (y_ss) / (u_ss)
 sys1 = ct.tf([k], [tau, 1])
 
-plt.plot(t_norm[30000-t_ign:35000-t_ign], angle_norm[30000-t_ign:35000-t_ign], 'b', label='dados do degrau')
-plt.plot(t_norm[30000-t_ign:35000-t_ign], maxm2[30000-t_ign:35000-t_ign], 'g')
+plt.plot(t_norm[30000-t_ign:35000-t_ign], angle_norm[30000-t_ign:35000-t_ign], 'b', label='curva referente ao degrau 2')
+plt.plot(t_norm[30000-t_ign:35000-t_ign], maxm2[30000-t_ign:35000-t_ign], 'g', label='limites - valores inicial e em regime permanente')
 plt.plot(t_norm[30000-t_ign:35000-t_ign], minm2[30000-t_ign:35000-t_ign], 'g')
-plt.plot(t_norm[30000-t_ign:35000-t_ign], -0.000375*t_norm[30000-t_ign:35000-t_ign] + 6.7341, 'r')
+plt.plot(t_norm[30000-t_ign:35000-t_ign], -0.000375*t_norm[30000-t_ign:35000-t_ign] + 6.7341, 'r', label='reta que passa pelo ponto de inflexão')
 plt.xlabel("t")
 plt.ylabel("y(t)")
 plt.legend()
@@ -99,10 +98,10 @@ k2 = (yss_2) / (uss_2)
 sys2 = ct.tf([k2], [tau2, 1])
 
 
-plt.plot(t_norm[45000-t_ign:58000-t_ign], angle_norm[45000-t_ign:58000-t_ign], 'b', label='dados do degrau')
-plt.plot(t_norm[45000-t_ign:58000-t_ign], maxm3[45000-t_ign:58000-t_ign], 'g')
+plt.plot(t_norm[45000-t_ign:58000-t_ign], angle_norm[45000-t_ign:58000-t_ign], 'b', label='curva referente ao degrau 3')
+plt.plot(t_norm[45000-t_ign:58000-t_ign], maxm3[45000-t_ign:58000-t_ign], 'g', label='limites - valores inicial e em regime permanente')
 plt.plot(t_norm[45000-t_ign:58000-t_ign], minm3[45000-t_ign:58000-t_ign], 'g')
-plt.plot(t_norm[45000-t_ign:58000-t_ign], -0.00111*t_norm[45000-t_ign:58000-t_ign] + 33.913, 'r')
+plt.plot(t_norm[45000-t_ign:58000-t_ign], -0.00111*t_norm[45000-t_ign:58000-t_ign] + 33.913, 'r', label='reta que passa pelo ponto de inflexão')
 plt.xlabel("t")
 plt.ylabel("y(t)")
 plt.legend()
@@ -117,10 +116,10 @@ k3 = (yss_3) / (uss_3)
 sys3 = ct.tf([k3], [tau3, 1])
 
 
-plt.plot(t_norm[60000-t_ign:75000-t_ign], angle_norm[60000-t_ign:75000-t_ign], 'b', label='dados do degrau')
-plt.plot(t_norm[60000-t_ign:75000-t_ign], maxm4[60000-t_ign:75000-t_ign], 'g')
+plt.plot(t_norm[60000-t_ign:75000-t_ign], angle_norm[60000-t_ign:75000-t_ign], 'b', label='curva referente ao degrau 4')
+plt.plot(t_norm[60000-t_ign:75000-t_ign], maxm4[60000-t_ign:75000-t_ign], 'g', label='limites - valores inicial e em regime permanente')
 plt.plot(t_norm[60000-t_ign:75000-t_ign], minm4[60000-t_ign:75000-t_ign], 'g')
-plt.plot(t_norm[60000-t_ign:75000-t_ign], 0.001786*t_norm[60000-t_ign:75000-t_ign] + -82.1881, 'r')
+plt.plot(t_norm[60000-t_ign:75000-t_ign], 0.001786*t_norm[60000-t_ign:75000-t_ign] + -82.1881, 'r', label='reta que passa pelo ponto de inflexão')
 plt.xlabel("t")
 plt.ylabel("y(t)")
 plt.legend()
@@ -146,7 +145,7 @@ t, y4 = ct.forced_response(sys4, timers, duty_cycles2)
 fig, axs = plt.subplots(2, 2, figsize=(12, 8))  # 2 linhas x 2 colunas
 
 # Primeiro degrau
-axs[0, 0].plot(timers, y1, 'b', label='resposta do modelo ZN primeiro degrau')
+axs[0, 0].plot(timers, y1, 'b', label='resposta do modelo Zigler Nichols primeiro degrau')
 axs[0, 0].plot(timers, angles2, 'r', label='resposta do sistema real')
 axs[0, 0].set_xlabel("t")
 axs[0, 0].set_ylabel("y(t)")
@@ -154,7 +153,7 @@ axs[0, 0].legend()
 axs[0, 0].grid()
 
 # Segundo degrau
-axs[0, 1].plot(timers, y2, 'b', label='resposta do modelo ZN segundo degrau')
+axs[0, 1].plot(timers, y2, 'b', label='resposta do modelo Zigler Nichols segundo degrau')
 axs[0, 1].plot(timers, angles2, 'r', label='resposta do sistema real')
 axs[0, 1].set_xlabel("t")
 axs[0, 1].set_ylabel("y(t)")
@@ -162,7 +161,7 @@ axs[0, 1].legend()
 axs[0, 1].grid()
 
 # Terceiro degrau
-axs[1, 0].plot(timers, y3, 'b', label='resposta do modelo ZN terceiro degrau')
+axs[1, 0].plot(timers, y3, 'b', label='resposta do modelo Zigler Nichols terceiro degrau')
 axs[1, 0].plot(timers, angles2, 'r', label='resposta do sistema real')
 axs[1, 0].set_xlabel("t")
 axs[1, 0].set_ylabel("y(t)")
@@ -170,7 +169,7 @@ axs[1, 0].legend()
 axs[1, 0].grid()
 
 # Quarto degrau
-axs[1, 1].plot(timers, y4, 'b', label='resposta do modelo ZN quarto degrau')
+axs[1, 1].plot(timers, y4, 'b', label='resposta do modelo Zigler Nichols quarto degrau')
 axs[1, 1].plot(timers, angles2, 'r', label='resposta do sistema real')
 axs[1, 1].set_xlabel("t")
 axs[1, 1].set_ylabel("y(t)")
@@ -202,9 +201,9 @@ plt.ylabel('y(t)')
 plt.grid()
 plt.show()
 
-plt.plot(t_norm[:20000-t_ign], angle_norm[:20000-t_ign], 'b', label='dados do degrau')
-plt.plot(t_norm[:20000 - t_ign], 0.00111*t_norm[:20000 - t_ign] -0.59077, 'r')
-plt.plot(t_norm[:20000-t_ign], maxm[:20000 - t_ign], 'g')
+plt.plot(t_norm[:20000-t_ign], angle_norm[:20000-t_ign], 'b', label='curva referente ao degrau 1')
+plt.plot(t_norm[:20000 - t_ign], 0.00111*t_norm[:20000 - t_ign] -0.59077, 'r', label= 'reta que passa pelo ponto associado a 63% do valor do degrau')
+plt.plot(t_norm[:20000-t_ign], maxm[:20000 - t_ign], 'g', label='limites - valores inicial e em regime permanente')
 plt.plot(t_norm[:20000 - t_ign], minm[:20000 - t_ign], 'g')
 plt.xlabel("t")
 plt.ylabel("y(t)")
@@ -215,10 +214,10 @@ plt.show()
 tau5 = 612.0
 sys5 = ct.tf([k], [tau5, 1])
 
-plt.plot(t_norm[25000-t_ign:35000-t_ign], angle_norm[25000-t_ign:35000-t_ign], 'b', label='dados do degrau')
-plt.plot(t_norm[25000-t_ign:35000-t_ign], maxm2[25000-t_ign:35000-t_ign], 'g')
+plt.plot(t_norm[25000-t_ign:35000-t_ign], angle_norm[25000-t_ign:35000-t_ign], 'b', label='curva referente ao degrau 2')
+plt.plot(t_norm[25000-t_ign:35000-t_ign], maxm2[25000-t_ign:35000-t_ign], 'g', label='limites - valores inicial e em regime permanente')
 plt.plot(t_norm[25000-t_ign:35000-t_ign], minm2[25000-t_ign:35000-t_ign], 'g')
-plt.plot(t_norm[25000-t_ign:35000-t_ign], -0.0000943*t_norm[25000-t_ign:35000-t_ign] + 2.01504, 'r')
+plt.plot(t_norm[25000-t_ign:35000-t_ign], -0.0000943*t_norm[25000-t_ign:35000-t_ign] + 2.01504, 'r', label= 'reta que passa pelo ponto associado a 63% do valor da degrau')
 plt.xlabel("t")
 plt.ylabel("y(t)")
 plt.legend()
@@ -228,10 +227,10 @@ plt.show()
 tau6 = 4829.0
 sys6 = ct.tf([k2], [tau6, 1])
 
-plt.plot(t_norm[40000-t_ign:58000-t_ign], angle_norm[40000-t_ign:58000-t_ign], 'b', label='dados do degrau')
-plt.plot(t_norm[40000-t_ign:58000-t_ign], maxm3[40000-t_ign:58000-t_ign], 'g')
+plt.plot(t_norm[40000-t_ign:58000-t_ign], angle_norm[40000-t_ign:58000-t_ign], 'b', label='curva referente ao degrau 3')
+plt.plot(t_norm[40000-t_ign:58000-t_ign], maxm3[40000-t_ign:58000-t_ign], 'g', label='limites - valores inicial e em regime permanente')
 plt.plot(t_norm[40000-t_ign:58000-t_ign], minm3[40000-t_ign:58000-t_ign], 'g')
-plt.plot(t_norm[40000-t_ign:58000-t_ign], -0.000261*t_norm[40000-t_ign:58000-t_ign] + 7.86284, 'r')
+plt.plot(t_norm[40000-t_ign:58000-t_ign], -0.000261*t_norm[40000-t_ign:58000-t_ign] + 7.86284, 'r', label= 'reta que passa pelo ponto associado a 63% do valor da degrau')
 plt.xlabel("t")
 plt.ylabel("y(t)")
 plt.legend()
@@ -241,10 +240,10 @@ plt.show()
 tau7 = 4870.0
 sys7 = ct.tf([k3], [tau7, 1])
 
-plt.plot(t_norm[55000-t_ign:75000-t_ign], angle_norm[55000-t_ign:75000-t_ign], 'b', label='dados do degrau')
-plt.plot(t_norm[55000-t_ign:75000-t_ign], maxm4[55000-t_ign:75000-t_ign], 'g')
+plt.plot(t_norm[55000-t_ign:75000-t_ign], angle_norm[55000-t_ign:75000-t_ign], 'b', label='curva referente ao degrau 4')
+plt.plot(t_norm[55000-t_ign:75000-t_ign], maxm4[55000-t_ign:75000-t_ign], 'g', label='limites - valores inicial e em regime permanente')
 plt.plot(t_norm[55000-t_ign:75000-t_ign], minm4[55000-t_ign:75000-t_ign], 'g')
-plt.plot(t_norm[55000-t_ign:75000-t_ign], 0.00165*t_norm[55000-t_ign:75000-t_ign] + -75.90605, 'r')
+plt.plot(t_norm[55000-t_ign:75000-t_ign], 0.00165*t_norm[55000-t_ign:75000-t_ign] + -75.90605, 'r', label= 'reta que passa pelo ponto associado a 63% do valor da degrau')
 plt.xlabel("t")
 plt.ylabel("y(t)")
 plt.legend()
@@ -303,25 +302,25 @@ p_1 = np.array([angles[t_ign] + 0.284 * (dy - angles[t_ign]) for i in range(len(
 p_2 = np.array([angles[t_ign] + 0.632 * (dy - angles[t_ign]) for i in range(len(t_norm))])
 
 dy2 = np.mean(angles[35000:45000])
-p_12 = np.array([dy2 + 0.456 * (dy - dy2) for i in range(len(t_norm))])
-p_22 = np.array([dy2 + 0.789 * (dy - dy2) for i in range(len(t_norm))])
+p_12 = np.array([dy2 + 0.284 * (dy - dy2) for i in range(len(t_norm))])
+p_22 = np.array([dy2 + 0.632 * (dy - dy2) for i in range(len(t_norm))])
 
 dy3 = np.mean(angles[55000:58000])
-p_13 = np.array([dy3 + 0.456 * (dy2 - dy3) for i in range(len(t_norm))])
-p_23 = np.array([dy3 + 0.789 * (dy2 - dy3) for i in range(len(t_norm))])
+p_13 = np.array([dy3 + 0.284 * (dy2 - dy3) for i in range(len(t_norm))])
+p_23 = np.array([dy3 + 0.632 * (dy2 - dy3) for i in range(len(t_norm))])
 
 dy4 = np.mean(angles[67000:75000])
-p_14 = np.array([dy3 + 0.456 * (dy4 - dy3) for i in range(len(t_norm))])
-p_24 = np.array([dy3 + 0.789 * (dy4 - dy3) for i in range(len(t_norm))])
+p_14 = np.array([dy3 + 0.284 * (dy4 - dy3) for i in range(len(t_norm))])
+p_24 = np.array([dy3 + 0.632 * (dy4 - dy3) for i in range(len(t_norm))])
 
 plt.plot(t_norm, angles[t_ign:], 'b', label='dados do sistema')
-plt.plot(t_norm, p_1, 'g')
+plt.plot(t_norm, p_1, 'g', label= 'retas que passam por dois pontos escolhidos para a subida do degrau 1')
 plt.plot(t_norm, p_2, 'g')
-plt.plot(t_norm, p_12, 'r')
+plt.plot(t_norm, p_12, 'r', label= 'retas que passam por dois pontos escolhidos para a subida do degrau 2')
 plt.plot(t_norm, p_22, 'r')
-plt.plot(t_norm, p_13, 'purple')
+plt.plot(t_norm, p_13, 'purple', label= 'retas que passam por dois pontos escolhidos para a subida do degrau 3')
 plt.plot(t_norm, p_23, 'purple')
-plt.plot(t_norm, p_14, 'black')
+plt.plot(t_norm, p_14, 'black', label= 'retas que passam por dois pontos escolhidos para a subida do degrau 4')
 plt.plot(t_norm, p_24, 'black')
 plt.legend()
 plt.xlabel('t')
@@ -329,13 +328,13 @@ plt.ylabel('y(t)')
 plt.grid()
 plt.show()
 
-tau9 = 238.5
+tau9 = 304.5
 sys9 = ct.tf([k], [tau9, 1])
-tau10 = 1152.0
+tau10 = 1365.0
 sys10 = ct.tf([k2], [tau10, 1])
-tau11 = 1950.0
+tau11 = 2745.0
 sys11 = ct.tf([k3], [tau11, 1])
-tau12 = 624.0
+tau12 = 495.0
 sys12 = ct.tf([k4], [tau12, 1])
 
 t, y9 = ct.forced_response(sys9, timers, duty_cycles2)
@@ -382,13 +381,44 @@ plt.show()
 
 # Método de Krishnaswamy:
 
-tau13 = 107.325
+dyz = np.mean(angles[18000:25000])
+p_1z = np.array([angles[t_ign] + 0.353 * (dyz - angles[t_ign]) for i in range(len(t_norm))])
+p_2z = np.array([angles[t_ign] + 0.853 * (dyz - angles[t_ign]) for i in range(len(t_norm))])
+
+dy2z = np.mean(angles[35000:45000])
+p_12z = np.array([dy2z + 0.353 * (dyz - dy2z) for i in range(len(t_norm))])
+p_22z = np.array([dy2z + 0.853 * (dyz - dy2z) for i in range(len(t_norm))])
+
+dy3z = np.mean(angles[55000:58000])
+p_13z = np.array([dy3z + 0.353 * (dy2z - dy3z) for i in range(len(t_norm))])
+p_23z = np.array([dy3z + 0.853 * (dy2z - dy3z) for i in range(len(t_norm))])
+
+dy4z = np.mean(angles[67000:75000])
+p_14z = np.array([dy3z + 0.353 * (dy4z - dy3z) for i in range(len(t_norm))])
+p_24z = np.array([dy3z + 0.853 * (dy4z - dy3z) for i in range(len(t_norm))])
+
+plt.plot(t_norm, angles[t_ign:], 'b', label='dados do sistema')
+plt.plot(t_norm, p_1z, 'g', label= 'retas que passam por dois pontos escolhidos para a subida do degrau 1')
+plt.plot(t_norm, p_2z, 'g')
+plt.plot(t_norm, p_12z, 'r', label= 'retas que passam por dois pontos escolhidos para a subida do degrau 2')
+plt.plot(t_norm, p_22z, 'r')
+plt.plot(t_norm, p_13z, 'purple', label= 'retas que passam por dois pontos escolhidos para a subida do degrau 3')
+plt.plot(t_norm, p_23z, 'purple')
+plt.plot(t_norm, p_14z, 'black', label= 'retas que passam por dois pontos escolhidos para a subida do degrau 4')
+plt.plot(t_norm, p_24z, 'black')
+plt.legend()
+plt.xlabel('t')
+plt.ylabel('y(t)')
+plt.grid()
+plt.show()
+
+tau13 = 263.25
 sys13 = ct.tf([k], [tau13, 1])
-tau14 = 518.4
+tau14 = 931.5
 sys14 = ct.tf([k2], [tau14, 1])
-tau15 = 877.5
+tau15 = 1154.25
 sys15 = ct.tf([k3], [tau15, 1])
-tau16 = 280.8
+tau16 = 837.0
 sys16 = ct.tf([k4], [tau16, 1])
 
 t, y13 = ct.forced_response(sys13, timers, duty_cycles2)

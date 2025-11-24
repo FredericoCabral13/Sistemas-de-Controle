@@ -114,162 +114,140 @@ import numpy as np
 import matplotlib.pyplot as plt
 import control as ct
 
-num = [3]
-den = [1, 2, 5]
-sys_cont = ct.tf(num, den)
+t = np.linspace(0.0, 10.0, 100)    # Array de tempo               
+ref = np.array([1.0 for i in range(len(t))])  # Array de referência
 
-# Conversão para Espaço de Estados (necessário para simulação matricial)
-sys_ss = ct.ss(sys_cont)
+G2 = ct.tf([3.0], [1.0, 2.0, 5.0], name='G2', inputs='u', outputs='y')
 
-# Parâmetros de Tempo
-dt = 0.01           # Passo de tempo (s)
-T_sim = 12.0        # Tempo total de simulação
-t = np.arange(0, T_sim, dt)
-N = len(t)
+t_out, y_op = ct.forced_response(G2, T=t, U=ref)
 
-# Discretização da Planta (Zero-Order Hold)
-sys_d = ct.c2d(sys_ss, dt, method='zoh')
-A, B, C, D = sys_d.A, sys_d.B, sys_d.C, sys_d.D
-
-
-tau_c = 1.0 
-
-# Cálculo dos Ganhos PID
-Kp = 2 / (3 * tau_c)
-Ki = 5 / (3 * tau_c)
-Kd = 1 / (3 * tau_c)
-
-# Regra de projeto: Kb = 1/tau_c
-Kb = 1.0 / tau_c
-
-print(f"Ganhos Calculados:\nKp = {Kp:.4f}\nKi = {Ki:.4f}\nKd = {Kd:.4f}\nKb = {Kb:.4f}")
-
-
-def simular_sistema(tipo_simulacao, u_max_val=None):
-    
-    y_out = np.zeros(N)
-    u_out = np.zeros(N)     # Sinal real aplicado
-    v_out = np.zeros(N)     # Sinal calculado (interno do PID)
-    
-    x = np.zeros((2, 1))    # Estado inicial da planta
-    integral = 0.0
-    erro_ant = 0.0
-    
-    ref = 1.0 # Degrau unitário
-    
-    for k in range(N-1):
-        # 1. Cálculo do Erro
-        erro = ref - y_out[k]
-        
-        # 2. Termos do PID
-        P = Kp * erro
-        deriv = (erro - erro_ant) / dt
-        D_term = Kd * deriv
-        
-        # O termo integral (I) é acumulado abaixo dependendo do método
-        
-        # 3. Sinal de Controle Calculado (v)
-        v = P + integral + D_term
-        v_out[k] = v
-        
-        # 4. Lógica de Saturação e Anti-Windup
-        if tipo_simulacao == 'linear':
-            u = v
-            # Integração padrão
-            integral += Ki * erro * dt
-            
-        else: # Casos com saturação
-            # Aplica Saturação
-            if v > u_max_val:
-                u = u_max_val
-            elif v < -u_max_val:
-                u = -u_max_val
-            else:
-                u = v
-            
-            # Aplica Anti-Windup
-            if tipo_simulacao == 'back_calc':
-                # Fórmula do Back Calculation: I_dot = Ki*e + Kb*(u - v)
-                erro_sat = u - v
-                integral += (Ki * erro + Kb * erro_sat) * dt
-            
-            elif tipo_simulacao == 'windup':
-                # Erro clássico: continua integrando mesmo saturado
-                integral += Ki * erro * dt
-        
-        u_out[k] = u
-        erro_ant = erro
-        
-        # 5. Atualização da Planta (Espaço de Estados)
-        x_next = A @ x + B * u
-        y_next = C @ x + D * u
-        
-        x = x_next
-        y_out[k+1] = y_next.item()
-        
-    return y_out, u_out, v_out
-
-
-# PASSO A: Simulação Linear para descobrir o Pico
-_, _, v_linear = simular_sistema('linear')
-pico_livre = np.max(v_linear)
-u_ss_teorico = 5/3 # 1.66...
-
-print(f"\nPico Máximo (Resposta Livre): {pico_livre:.4f}")
-print(f"Esforço de Regime (Steady State): {u_ss_teorico:.4f}")
-
-# PASSO B: Definir Limite de Saturação (70%)
-u_limite = 0.70 * pico_livre
-print(f"Limite de Saturação Definido (70%): {u_limite:.4f}")
-
-# Validação de segurança
-if u_limite < u_ss_teorico:
-    print("ALERTA CRÍTICO: O limite de 70% é menor que o valor necessário para regime permanente!")
-    print("O sistema nunca chegará na referência. Aumentando tau_c seria necessário.")
-else:
-    print("Condição de projeto OK: O limite permite chegar ao regime permanente.")
-
-# PASSO C: Simulações Comparativas
-# 1. Com Windup (Problemático)
-y_bad, u_bad, v_bad = simular_sistema('windup', u_limite)
-
-# 2. Com Back Calculation (Correto)
-y_good, u_good, v_good = simular_sistema('back_calc', u_limite)
-
-
-plt.figure(figsize=(12, 10))
-
-# Gráfico 1: Saída y(t)
-plt.subplot(3, 1, 1)
-plt.title(f'Comparação de Desempenho (Saturação em {u_limite:.2f})')
-plt.plot(t, y_bad, 'r--', label='Sem Anti-Windup (Windup)')
-plt.plot(t, y_good, 'b-', linewidth=2, label='Com Back Calculation')
-plt.plot(t, np.ones(N), 'k:', label='Referência')
-plt.ylabel('Saída y(t)')
-plt.legend(loc='lower right')
-plt.grid(True)
-
-# Gráfico 2: Sinal de Controle Real u(t)
-plt.subplot(3, 1, 2)
-plt.plot(t, u_bad, 'r--', label='Controle (Windup)')
-plt.plot(t, u_good, 'b-', label='Controle (Back Calc)')
-plt.hlines([u_limite], 0, T_sim, 'k', linestyles='dotted', label='Limite Saturação')
-plt.ylabel('Sinal Aplicado u(t)')
-plt.legend(loc='upper right')
-plt.grid(True)
-
-# Gráfico 3: Sinal Interno do Controlador v(t)
-plt.subplot(3, 1, 3)
-plt.plot(t, v_bad, 'r--', label='Sinal Calculado (Sem Correção)')
-plt.plot(t, v_good, 'b-', label='Sinal Calculado (Corrigido)')
-plt.hlines([u_limite], 0, T_sim, 'k', linestyles='dotted', label='Limite')
-plt.ylabel('Sinal Interno v(t)')
-plt.xlabel('Tempo (s)')
-plt.legend(loc='upper right')
-plt.grid(True)
-
-plt.tight_layout()
+plt.plot(t, y_op, 'r', label='saida do sistema em malha aberta')
+plt.xlabel('t (seg)')
+plt.ylabel('y(t)')
+plt.legend()
+plt.grid()
 plt.show()
+
+up = 5.0
+tau = 1.0
+tau_mfd = tau
+zt = -np.log(up/100)/(np.sqrt(np.pi**2 + (np.log(up/100))**2))
+wn = 4/(4*tau_mfd*zt)
+
+kp = (wn**2)*2.0/3.0
+ki = (wn**2)*5.0/3.0
+kd = (wn**2)/3.0
+
+P = ct.tf([kp], [1.0], name='P', inputs='u', outputs='y')
+I = ct.tf([1.0], [1.0, 0.0], name='I', inputs='u', outputs='y')
+KI = ct.tf([ki], [1.0], name='KI', inputs='u', outputs='y')
+D = ct.tf([kd, 0.0], [0.0001, 1.0], name='D', inputs='u', outputs='y')
+H = ct.tf([1], [1], name="H", inputs="u", outputs="y")  
+sum_err = ct.summing_junction(inputs=["r", "-uH"], output="y", name="sum_err")
+sum_control = ct.summing_junction(inputs=["p", "i", "d"], output="y", name="sum_control")
+sum_anti_w = ct.summing_junction(inputs=["-w", "u"], output="y", name="sum_anti_w")
+sum_intg = ct.summing_junction(inputs=["ic", "ies"], output="y", name="sum_intg")
+Ies = ct.tf([1/(np.sqrt((kp/ki)*(kp*kd)))], [1.0], name='Ies', inputs='u', outputs='y')
+f = ct.tf([1.0], [1.0, 2*zt*wn], name='f', inputs="u", outputs="y")
+u_max = 1.77
+u_sat = 0.7 * u_max
+PID = P + KI + D
+C = PID*f
+
+def out_fcn(t, x, u, params=None):
+    y = np.array([0.0])
+    if u[0] > u_sat:
+        y[0] = u_sat
+    elif u[0] < -u_sat:
+        y[0] = -u_sat
+    else:
+        y[0] = u[0]
+    return y
+
+def updfcn(t, x, u, params=None):
+    return []
+
+atuador = ct.NonlinearIOSystem(
+    updfcn=updfcn,
+    outfcn=out_fcn,
+    inputs=1,
+    outputs=1,
+    states=0,
+    name="atuador"
+)
+
+malha_f = ct.interconnect(
+    syslist=[G2, P, I, D, KI, H, sum_err, sum_control, f, sum_anti_w, sum_intg, Ies, atuador],
+    connections=[
+        ['sum_err.uH', 'H.y'], 
+        ['P.u', 'sum_err.y'],       
+        ['KI.u', 'sum_err.y'],      
+        ['D.u', 'sum_err.y'],      
+        ['sum_control.p', 'P.y'],
+        ['sum_control.i', 'I.y'],
+        ['sum_control.d', 'D.y'],
+        ['f.u', 'sum_control.y'],
+        ['G2.u', 'atuador.y'],
+        ['H.u', 'G2.y'],
+        ['sum_anti_w.w', 'f.y'],
+        ['sum_anti_w.u', 'atuador.y'], 
+        ['atuador.u', 'f.y'],
+        ['Ies.u', 'sum_anti_w.y'],
+        ['sum_intg.ic', 'KI.y'],
+        ['sum_intg.ies', 'Ies.y'],
+        ['I.u', 'sum_intg.y'],
+    ],
+    inplist=["r"],
+    outlist=["G2.y", "atuador.y", "f.y"]   
+)
+
+t_out, Y = ct.forced_response(malha_f, T=t, U=ref)
+y = Y[0, :]
+u_w = Y[1, :]
+u = Y[2, :]
+
+
+plt.plot(t, y, 'b', label='saida do sistema em malha fechada')
+plt.xlabel('t(seg)')
+plt.ylabel('y(t)')
+plt.legend()
+plt.grid()
+plt.show()
+
+plt.plot(t, u, 'r', label='sinal de controle para a malha fechada')
+plt.xlabel('t(seg)')
+plt.ylabel('y(t)')
+plt.legend()
+plt.grid()
+plt.show()
+
+plt.plot(t, u_w, 'r', label='sinal de controle para a malha fechada com o anti-windup')
+plt.xlabel('t(seg)')
+plt.ylabel('y(t)')
+plt.legend()
+plt.grid()
+plt.show()
+
+Gcl = ct.feedback((G2*C), H)
+t_out, Y2 = ct.forced_response(Gcl, T=t, U=ref)
+
+plt.plot(t, Y2, 'r', label='saida do sistema em malha aberta')
+plt.xlabel('t(seg)')
+plt.ylabel('y(t)')
+plt.legend()
+plt.grid()
+plt.show()
+
+
+G_inv = 1/G2
+print(f'teste inv planta= {G_inv}')
+
+
+
+
+
+
+
 
 # %% QUESTÂO 3
 

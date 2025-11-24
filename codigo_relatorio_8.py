@@ -255,10 +255,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import control as ct
 
-# ==========================================
-# 1. DEFINIÇÃO DA PLANTA E PARÂMETROS
-# ==========================================
-# Planta assumida (do exercício anterior). Substitua se tiver outra.
+
 # G(s) = 3 / (s^2 + 2s + 5)
 num = [3]
 den = [1, 2, 5]
@@ -353,7 +350,7 @@ plt.ylabel('Sinal de Controle (u)')
 plt.legend()
 plt.grid(True)
 
-# Sinal Efetivo (O que a planta realmente vê)
+# Sinal Efetivo
 plt.subplot(3, 1, 3)
 plt.plot(t, u_eff_p, 'r--', label='Entrada Efetiva P')
 plt.plot(t, u_eff_pi, 'b-', label='Entrada Efetiva PI')
